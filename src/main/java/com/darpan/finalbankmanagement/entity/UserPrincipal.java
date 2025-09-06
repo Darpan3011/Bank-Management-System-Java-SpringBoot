@@ -9,7 +9,7 @@ import java.util.List;
 
 public class UserPrincipal implements UserDetails {
 
-    private UserAccount user;
+    private final UserAccount user;
 
     public UserPrincipal(UserAccount user) {
         this.user = user;

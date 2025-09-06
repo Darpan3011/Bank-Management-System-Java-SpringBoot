@@ -20,21 +20,19 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    public UserDetailsService userDetailsService;
-
-    public SecurityConfig(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(
-                "account/create"
+            "/account/create", 
+            "/swagger-ui.html", 
+            "/swagger-ui/**", 
+            "/api-docs/**", 
+            "/v3/api-docs/**"
         );
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
 
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 
@@ -45,17 +43,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
 
-                .csrf(x -> x.disable())
-                .authorizeHttpRequests((req) ->
-                        req
+                .csrf(x -> x.disable()).authorizeHttpRequests((req) -> req
 //                                .requestMatchers("/actuator/**").permitAll()
-                                .anyRequest().permitAll())
-                .formLogin(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(Customizer.withDefaults());
+                        .anyRequest().permitAll()).formLogin(AbstractHttpConfigurer::disable).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
